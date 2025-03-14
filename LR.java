@@ -2,11 +2,11 @@ import java.util.*;
 public class LR {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        System.out.print("Enter number of productions: ");
+        System.out.print("No. of PRules:");
         int n = sc.nextInt();
         sc.nextLine();
         List<String> nonTerminals = new ArrayList<>(), rules = new ArrayList<>();
-        System.out.println("Enter productions (e.g., A->Ab|c):");
+        System.out.println("Productions: ");
         while (n-- > 0) {
             String[] parts = sc.nextLine().split("->");
             nonTerminals.add(parts[0].trim());
@@ -27,6 +27,7 @@ public class LR {
             String newNt = nt + "'";
             beta.replaceAll(b -> b + newNt);
             alpha.replaceAll(a -> a + newNt);
+            System.out.println("Result After Removing Left Recursion!");
             System.out.println(nt + "->" + String.join("|", beta));
             System.out.println(newNt + "->" + String.join("|", alpha) + "|ε");
         }
