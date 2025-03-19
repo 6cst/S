@@ -28,3 +28,5 @@ public class Main {
     System.out.println(newnt + "->" + String.join("|", p));
   }
 }
+
+
