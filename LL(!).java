@@ -1,111 +1,111 @@
+Enter the number of rules to skip: 5
+Enter rule 1: S->aABb
+Enter rule 2: A->c
+Enter rule 3: A->ε
+Enter rule 4: B->d
+Enter rule 5: B->ε
+Enter nonterminals (space separated): S A B 
+Enter terminals (space separated): a b c d
+Enter the parsing table entries:
+Entry for nonterminal 'S', terminal 'a': aABb
+Entry for nonterminal 'S', terminal 'b': 
+Entry for nonterminal 'S', terminal 'c': 
+Entry for nonterminal 'S', terminal 'd': 
+Entry for nonterminal 'A', terminal 'a': 
+Entry for nonterminal 'A', terminal 'b': ε
+Entry for nonterminal 'A', terminal 'c': c
+Entry for nonterminal 'A', terminal 'd': ε
+Entry for nonterminal 'B', terminal 'a': 
+Entry for nonterminal 'B', terminal 'b': ε
+Entry for nonterminal 'B', terminal 'c': 
+Entry for nonterminal 'B', terminal 'd': d
+Enter input tokens (space separated, end with $): a c d b $
+String Accepted
+
+
 import java.util.Scanner;
 import java.util.Stack;
+import java.util.Arrays;
 
 public class Main {
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        
-        // Read (and ignore) grammar rules
-        int r = Integer.parseInt(sc.nextLine());
-        for (int i = 0; i < r; i++) {
-            sc.nextLine();
+    public static void main(String[] a) {
+        Scanner s = new Scanner(System.in);
+        System.out.print("n: ");
+        int n = Integer.parseInt(s.nextLine());
+        for (int i = 0; i < n; i++) {
+            System.out.print("r: ");
+            s.nextLine();
         }
-        
-        // Read nonterminals and terminals
-        String[] nonterms = sc.nextLine().split("\\s+");
-        String[] terms = sc.nextLine().split("\\s+");
-        
-        // Build LL(1) table
-        String[][] table = new String[nonterms.length][terms.length];
-        boolean notLL1 = false;
-        for (int i = 0; i < nonterms.length; i++) {
-            for (int j = 0; j < terms.length; j++) {
-                table[i][j] = sc.nextLine();
-                if (table[i][j].contains("|"))
-                    notLL1 = true;
+        System.out.print("N: ");
+        String[] N = s.nextLine().split("\\s+");
+        System.out.print("T: ");
+        String[] T = s.nextLine().split("\\s+");
+        String[][] M = new String[N.length][T.length];
+        boolean e = false;
+        System.out.println("M:");
+        for (int i = 0; i < N.length; i++) {
+            for (int j = 0; j < T.length; j++) {
+                System.out.print("M[" + i + "][" + j + "]: ");
+                M[i][j] = s.nextLine();
+                if (M[i][j].contains("|"))
+                    e = true;
             }
         }
-        
-        // If the grammar is not LL(1), signal a parsing error
-        if (notLL1) {
-            System.out.println("Parsing Error");
-            sc.close();
+        if (e) {
+            System.out.println("E");
+            s.close();
             return;
         }
-        
-        // Read input tokens and ensure it ends with "$"
-        String[] inputTokens = sc.nextLine().split("\\s+");
-        if (!inputTokens[inputTokens.length - 1].equals("$")) {
-            String[] temp = new String[inputTokens.length + 1];
-            for (int i = 0; i < inputTokens.length; i++)
-                temp[i] = inputTokens[i];
-            temp[inputTokens.length] = "$";
-            inputTokens = temp;
+        System.out.print("I: ");
+        String[] I = s.nextLine().split("\\s+");
+        if (!I[I.length - 1].equals("$")) {
+            String[] t = new String[I.length + 1];
+            for (int i = 0; i < I.length; i++) {
+                t[i] = I[i];
+            }
+            t[I.length] = "$";
+            I = t;
         }
-        
-        // Initialize stack with "$" at bottom and start symbol at top
-        Stack<String> stack = new Stack<>();
-        stack.push("$");
-        stack.push(nonterms[0]);
-        
-        int ip = 0;
-        boolean error = false;
-        
-        // Parsing loop (internally processes without printing intermediate steps)
-        while (!(stack.peek().equals("$") && inputTokens[ip].equals("$"))) {
-            String top = stack.peek();
-            if (isTerminal(top, nonterms)) {
-                if (top.equals(inputTokens[ip])) {
-                    stack.pop();
-                    ip++;
+        Stack<String> S = new Stack<>();
+        S.push("$");
+        S.push(N[0]);
+        int p = 0;
+        boolean f = false;
+        while (!(S.peek().equals("$") && I[p].equals("$"))) {
+            String x = S.peek();
+            if (!Arrays.asList(N).contains(x)) {
+                if (x.equals(I[p])) {
+                    S.pop();
+                    p++;
                 } else {
-                    error = true;
+                    f = true;
                     break;
                 }
             } else {
-                int row = index(nonterms, top);
-                int col = index(terms, inputTokens[ip]);
-                if (row == -1 || col == -1) {
-                    error = true;
+                int i = Arrays.asList(N).indexOf(x);
+                int j = Arrays.asList(T).indexOf(I[p]);
+                if (i == -1 || j == -1) {
+                    f = true;
                     break;
                 }
-                String prod = table[row][col];
-                if (prod.equals("ε") || prod.equals("''") || prod.isEmpty()) {
-                    stack.pop();
+                String y = M[i][j];
+                if (y.equals("ε") || y.equals("''") || y.isEmpty()) {
+                    S.pop();
                 } else {
-                    stack.pop();
-                    String[] prodTokens = prod.contains(" ") ? prod.split("\\s+") : prod.split("");
-                    for (int i = prodTokens.length - 1; i >= 0; i--) {
-                        stack.push(prodTokens[i]);
+                    S.pop();
+                    String[] z = y.contains(" ") ? y.split("\\s+") : y.split("");
+                    for (int k = z.length - 1; k >= 0; k--) {
+                        S.push(z[k]);
                     }
                 }
             }
         }
-        
-        // Final result
-        if (error)
-            System.out.println("Parsing Error");
+        if (f)
+            System.out.println("E");
         else
-            System.out.println("String Accepted");
-        
-        sc.close();
-    }
-    
-    // Returns the index of key in arr, or -1 if not found.
-    static int index(String[] arr, String key) {
-        for (int i = 0; i < arr.length; i++) {
-            if (arr[i].equals(key))
-                return i;
-        }
-        return -1;
-    }
-    
-    // Determines if the symbol is terminal (i.e., not among the nonterminals).
-    static boolean isTerminal(String symbol, String[] nonterms) {
-        for (String nt : nonterms) {
-            if (nt.equals(symbol))
-                return false;
-        }
-        return true;
+            System.out.println("A");
+        s.close();
     }
 }
+
+    
