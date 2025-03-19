@@ -1,26 +1,30 @@
 import java.util.*;
+
 public class Main {
   public static void main(String[] args) {
     Scanner s = new Scanner(System.in);
     System.out.println("Enter production (e.g. A->alpha beta1|alpha beta2|gamma1|gamma2):");
-    String p = s.nextLine();
-    String n = p.split("->")[0].trim();
-    String[] a = p.split("->")[1].split("\\|");
-    String x = a[0].trim().split(" ")[0];
-    List<String> g = new ArrayList<>(), o = new ArrayList<>();
-    for (String t : a) {
-      t = t.trim();
-      if (t.startsWith(x))
-        g.add(t.substring(x.length()).trim().isEmpty() ? "ε" : t.substring(x.length()).trim());
+    String pr = s.nextLine();
+    String nt = pr.split("->")[0].trim();
+    String[] a = pr.split("->")[1].split("\\|");
+    String b = a[0].trim().split(" ")[0];
+    List<String> p = new ArrayList<>(), c = new ArrayList<>();
+    
+    for (String d : a) {
+      d = d.trim();
+      if (d.startsWith(b))
+        p.add(d.substring(b.length()).trim().isEmpty() ? "ε" : d.substring(b.length()).trim());
       else
-        o.add(t);
+        c.add(d);
     }
-    if (g.size() < 2) {
-      System.out.println(p);
+    
+    if (p.size() < 2) {
+      System.out.println(pr);
       return;
     }
-    String y = n + "'";
-    System.out.println(n + "->" + x + y + (o.isEmpty() ? "" : "|" + String.join("|", o)));
-    System.out.println(y + "->" + String.join("|", g));
+    
+    String newnt = nt + "'";
+    System.out.println(nt + "->" + b + newnt + (c.isEmpty() ? "" : "|" + String.join("|", c)));
+    System.out.println(newnt + "->" + String.join("|", p));
   }
 }
